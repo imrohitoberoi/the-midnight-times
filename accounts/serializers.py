@@ -33,8 +33,9 @@ class LoginSerializer(rest_serializers.Serializer):
         user_instance = validated_data['user']
 
         # Generate a token for the user.
-        token = Token.objects.create(user=user_instance)
+        token, created = Token.objects.get_or_create(user=user_instance)
         validated_data['token'] = token.key
+
         return validated_data
 
 
@@ -48,6 +49,9 @@ class AdminUserRegistrationSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['email', 'password', 'first_name', 'last_name', 'keyword_quota']
+
+    def create(self, validated_data):
+        return get_user_model().objects.create_user(**validated_data)
 
 
 class AdminUserDetailSerializer(rest_serializers.ModelSerializer):
