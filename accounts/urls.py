@@ -10,4 +10,5 @@ router.register('users', accounts_views.AdminUserViewSet, basename='user')
 
 urlpatterns = [
     path('login/', accounts_views.LoginView.as_view(), name='login'),
+    path('logout/', accounts_views.LogoutView.as_view(), name='logout'),
 ] + router.urls
