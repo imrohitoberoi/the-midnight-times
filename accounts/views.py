@@ -9,6 +9,7 @@ from rest_framework import (
 
 from accounts import (
     constants as account_constants,
+    permissions as account_permissions,
     serializers as account_serializers,
 )
 from commons import mixins as commons_mixins
@@ -35,4 +36,5 @@ class AdminUserViewSet(commons_mixins.MultiSerializerClassViewSetMixin, rest_vie
     }
     http_method_names = ['get', 'post', 'put', 'patch']
     queryset = get_user_model().objects.all()
+    permission_classes = [account_permissions.IsAdminUser]
     pagination_class = None
