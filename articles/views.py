@@ -24,23 +24,22 @@ class NewsArticleFetchView(rest_generics.ListAPIView):
             raise rest_exceptions.ValidationError(articles_constants.ERROR_MESSAGES['MISSING_KEYWORD'])
 
         with transaction.atomic():
-            self.check_quota_and_update_history(keyword, self.request.user)
+            last_search_time = self.check_quota_and_update_history(keyword, self.request.user)
 
             # Fetch updated articles for the provided keyword
-            latest_articles = articles_utils.fetch_latest_news_articles(keyword)
+            latest_articles = articles_utils.fetch_latest_news_articles(keyword, last_search_time)
             if isinstance(latest_articles, str):
                 raise rest_exceptions.ValidationError(
                     f'{articles_constants.ERROR_MESSAGES["ERROR_FETCHING_ARTICLES"]}: {latest_articles}'
                 )
 
-            # Save the articles fetched
-            serializer = self.serializer_class(data=latest_articles, many=True)
-            if serializer.is_valid():
-                self.serializer_class.save_articles(keyword, serializer.validated_data)
+            # Validate & save the articles fetched if needed
+            if len(latest_articles) > 0:
+                serializer = self.serializer_class(data=latest_articles, many=True)
+                if serializer.is_valid():
+                    self.serializer_class.save_articles(keyword, serializer.validated_data)
 
-            # Retrieve all articles from the database for the given keyword
-            all_articles = articles_models.NewsArticle.objects.filter(keyword=keyword).order_by('published_at')
-        return all_articles
+        return articles_models.NewsArticle.objects.filter(keyword=keyword).order_by('-published_at')
 
     def check_quota_and_update_history(self, keyword, user):
         # Get the user instance
@@ -57,14 +56,17 @@ class NewsArticleFetchView(rest_generics.ListAPIView):
                 # Decrease the user's keyword quota
                 user_instance.keyword_quota -= 1
                 user_instance.save(update_fields=['keyword_quota'])
+                last_search_time = news_article_history.updated_at
             else:
                 # Delete the NewsArticleHistory object since it's not created
                 news_article_history.delete()
                 # Raise a validation error if the user's keyword quota is already zero
                 raise rest_exceptions.ValidationError('Keyword quota exceeded. You cannot track more keywords.')
         else:
+            last_search_time = articles_models.NewsArticleHistory.objects.filter(keyword=keyword).latest('updated_at').updated_at
             # Update the updated_at field only
             news_article_history.save()
+        return last_search_time
 
 
 class NewsArticleHistoryListView(rest_generics.ListAPIView):

@@ -24,3 +24,6 @@ class NewsArticle(common_models.BaseDateTimeModel):
 class NewsArticleHistory(common_models.BaseDateTimeModel):
     keyword = models.CharField(max_length=article_constants.TEXT_FIELD_MAX_LENGTH)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.email} - {self.keyword}'

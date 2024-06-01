@@ -136,8 +136,10 @@ REST_FRAMEWORK = {
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
+NEWS_API_KEY = os.environ.get('NEWS_API_KEY', '')
 NEWS_API_SUBSCRIPTION_DATE = os.environ.get('NEWS_API_SUBSCRIPTION_DATE')
+
+THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES = int(os.environ.get('THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES', 10))
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

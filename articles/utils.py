@@ -1,16 +1,25 @@
+import datetime
 import json
 import requests
 
 from django.conf import settings
 from django.db.models import Max
+from django.utils import timezone
 
 from articles import (
     constants as article_constants,
     models as article_models,
 )
 
-def fetch_latest_news_articles(keyword):
+def fetch_latest_news_articles(keyword, last_search_time):
     try:
+        # If the time difference is less than the threshold, return without fetching articles
+        if (
+            timezone.localtime(timezone.now()) - last_search_time <
+            datetime.timedelta(minutes=settings.THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES)
+        ):
+            return []
+
         # Check if there are any articles for the given keyword in the database
         latest_article_date = article_models.NewsArticle.objects.filter(
             keyword=keyword
@@ -58,4 +67,4 @@ def fetch_latest_news_articles(keyword):
         return all_articles
 
     except Exception as e:
-        return None
+        return str(e)
