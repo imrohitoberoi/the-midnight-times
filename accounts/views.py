@@ -9,7 +9,7 @@ from rest_framework import (
 
 from accounts import (
     constants as account_constants,
-    serializers as account_serializers
+    serializers as account_serializers,
 )
 from commons import mixins as commons_mixins
 
@@ -20,8 +20,6 @@ class LoginView(rest_generics.CreateAPIView):
 
 
 class LogoutView(rest_views.APIView):
-    permissions_required = []
-
     def post(self, request):
         request.auth.delete()
         return rest_response.Response({'message': account_constants.SUCCESS_MESSAGES['LOGOUT']})
