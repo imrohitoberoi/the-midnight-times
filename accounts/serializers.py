@@ -55,17 +55,14 @@ class AdminUserRegistrationSerializer(rest_serializers.ModelSerializer):
 
 
 class AdminUserDetailSerializer(rest_serializers.ModelSerializer):
+
     class Meta:
         model = get_user_model()
-        fields = ['email', 'first_name', 'last_name', 'keyword_quota', 'status']
+        fields = ['email', 'first_name', 'last_name', 'keyword_quota', 'status', 'is_staff']
 
 
 class AdminUserListSerializer(rest_serializers.ModelSerializer):
-    name = rest_serializers.SerializerMethodField()
 
     class Meta:
         model = get_user_model()
-        fields = ['id', 'email', 'name', 'keyword_quota', 'status']
-
-    def get_name(self, obj):
-        return obj.full_name
+        fields = ['id', 'email', 'first_name', 'last_name', 'keyword_quota', 'status']

@@ -32,7 +32,7 @@ class CustomUserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         return self._create_user(email, password, False, False, **extra_fields)
-    
+
     def create_superuser(self, email, password, **extra_fields):
         return self._create_user(email, password, True, True, **extra_fields)
 
@@ -59,7 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin, common_models.BaseDateTimeModel):
     last_name = models.CharField(max_length=255, null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=ACTIVE)
-    keyword_quota = models.IntegerField(default=5, help_text="Number of keywords a user can track. Default: 5")
+    keyword_quota = models.IntegerField(default=5, help_text='Number of keywords a user can track. Default: 5')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name']

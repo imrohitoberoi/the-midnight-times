@@ -25,8 +25,8 @@ class NewsArticleFetchSerializer(serializers.ModelSerializer):
                 title=article_data.get('title'),
                 description=article_data.get('description'),
                 url=article_data.get('url'),
-                urlToImage=article_data.get('urlToImage'),
-                publishedAt=article_data.get('publishedAt'),
+                url_to_image=article_data.get('urlToImage'),
+                published_at=article_data.get('publishedAt'),
                 content=article_data.get('content'),
                 source_id=source_id,
                 source_name=source_name
@@ -35,4 +35,10 @@ class NewsArticleFetchSerializer(serializers.ModelSerializer):
 
         # Bulk create news articles
         article_models.NewsArticle.objects.bulk_create(articles_to_create)
-        return articles_to_create
+        return articles_data
+
+
+class NewsArticleHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = article_models.NewsArticleHistory
+        fields = '__all__'

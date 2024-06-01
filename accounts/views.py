@@ -35,3 +35,4 @@ class AdminUserViewSet(commons_mixins.MultiSerializerClassViewSetMixin, rest_vie
     }
     http_method_names = ['get', 'post', 'put', 'patch']
     queryset = get_user_model().objects.all()
+    pagination_class = None

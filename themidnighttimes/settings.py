@@ -126,19 +126,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-#     'DEFAULT_FILTER_BACKENDS': [
-#         'django_filters.rest_framework.DjangoFilterBackend'
-#     ],
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
-#     'DEFAULT_PAGINATION_CLASS': 'commons.pagination.CustomPageNumberPagination',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': os.environ.get('PAGE_SIZE', 10)
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
+NEWS_API_SUBSCRIPTION_DATE = os.environ.get('NEWS_API_SUBSCRIPTION_DATE')
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
