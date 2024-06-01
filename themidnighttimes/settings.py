@@ -47,9 +47,11 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
 
     # Local apps
     'accounts',
+    'articles',
     'commons',
 ]
 
@@ -61,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'themidnighttimes.urls'
@@ -132,6 +135,10 @@ REST_FRAMEWORK = {
 #     'DEFAULT_PAGINATION_CLASS': 'commons.pagination.CustomPageNumberPagination',
 }
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
