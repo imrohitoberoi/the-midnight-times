@@ -15,7 +15,7 @@ def fetch_latest_news_articles(keyword, last_search_time):
     try:
         # If the time difference is less than the threshold, return without fetching articles
         if (
-            timezone.localtime(timezone.now()) - last_search_time <
+            last_search_time and timezone.localtime(timezone.now()) - last_search_time <
             datetime.timedelta(minutes=settings.THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES)
         ):
             return []
