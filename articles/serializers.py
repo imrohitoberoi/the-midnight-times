@@ -42,3 +42,8 @@ class NewsArticleHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = article_models.NewsArticleHistory
         fields = '__all__'
+
+
+class MostSearchedKeywordsSerializer(serializers.Serializer):
+    keyword = serializers.CharField()
+    count = serializers.IntegerField()

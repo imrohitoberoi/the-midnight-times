@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third party apps
+    'django_celery_beat',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
@@ -142,6 +143,14 @@ NEWS_API_KEY = os.environ.get('NEWS_API_KEY', '')
 NEWS_API_SUBSCRIPTION_DATE = os.environ.get('NEWS_API_SUBSCRIPTION_DATE')
 
 THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES = int(os.environ.get('THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES', 10))
+
+# Celery relates environment variables
+CELERY_BROKER_URL = os.environ.get('BROKER_URL', default='redis://localhost:6379')
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', default='json')
+CELERY_ACCEPT_CONTENT = os.environ.get('CELERY_ACCEPT_CONTENT', default=['application/json'])
+CELERY_BEAT_SCHEDULER = os.environ.get(
+    'CELERY_BEAT_SCHEDULER', default='django_celery_beat.schedulers:DatabaseScheduler'
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

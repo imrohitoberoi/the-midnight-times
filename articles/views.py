@@ -1,9 +1,15 @@
+import datetime
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models import Count
+from django.utils import timezone
 
 from rest_framework import (
     exceptions as rest_exceptions,
     generics as rest_generics,
+    response as rest_responses,
 )
 
 from articles import (
@@ -29,8 +35,16 @@ class NewsArticleFetchView(rest_generics.ListAPIView):
         with transaction.atomic():
             last_search_time = self.check_quota_and_update_history(keyword, self.request.user)
 
-            # Fetch updated articles for the provided keyword
-            latest_articles = articles_utils.fetch_latest_news_articles(keyword, last_search_time)
+            # If the time difference is less than the threshold, return without fetching articles
+            if (
+                last_search_time and timezone.localtime(timezone.now()) - last_search_time <
+                datetime.timedelta(minutes=settings.THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES)
+            ):
+                latest_articles = []
+            else:
+                # Fetch updated articles for the provided keyword
+                latest_articles = articles_utils.fetch_latest_news_articles(keyword)
+
             if isinstance(latest_articles, str):
                 raise rest_exceptions.ValidationError(
                     f'{articles_constants.ERROR_MESSAGES["ERROR_FETCHING_ARTICLES"]}: {latest_articles}'
@@ -80,3 +94,18 @@ class NewsArticleHistoryListView(rest_generics.ListAPIView):
 
     def get_queryset(self):
         return articles_models.NewsArticleHistory.objects.filter(user=self.request.user).order_by('-updated_at')
+
+
+class MostSearchedKeywordsView(rest_generics.ListAPIView):
+    serializer_class = articles_serializers.MostSearchedKeywordsSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return articles_models.NewsArticleHistory.objects.values('keyword').annotate(
+            count=Count('user', distinct=True)
+        ).order_by('-count')[:5]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return rest_responses.Response(serializer.data)
