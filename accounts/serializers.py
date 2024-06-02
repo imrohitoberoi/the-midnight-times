@@ -17,6 +17,7 @@ class LoginSerializer(rest_serializers.Serializer):
     email = rest_serializers.EmailField(max_length=accounts_constants.EMAIL_MAX_LENGTH, write_only=True)
     password = rest_serializers.CharField(max_length=accounts_constants.PASSWORD_MAX_LENGTH, write_only=True)
     token = rest_serializers.CharField(read_only=True)
+    is_staff = rest_serializers.BooleanField(read_only=True)
 
     def validate(self, data):
         user = authenticate(email=data['email'], password=data['password'])
@@ -35,6 +36,7 @@ class LoginSerializer(rest_serializers.Serializer):
         # Generate a token for the user.
         token, created = Token.objects.get_or_create(user=user_instance)
         validated_data['token'] = token.key
+        validated_data['is_staff'] = user_instance.is_staff
 
         return validated_data
 

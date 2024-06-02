@@ -79,4 +79,4 @@ class NewsArticleHistoryListView(rest_generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        return articles_models.NewsArticleHistory.objects.filter(user=self.request.user)
+        return articles_models.NewsArticleHistory.objects.filter(user=self.request.user).order_by('-updated_at')
