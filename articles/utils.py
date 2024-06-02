@@ -1,5 +1,6 @@
 import json
 import requests
+from datetime import datetime
 
 from django.conf import settings
 from django.db.models import Max
@@ -19,12 +20,14 @@ def fetch_latest_news_articles(keyword):
             keyword=keyword
         ).aggregate(Max('created_at'))['created_at__max']
 
-        # If there are articles, use the latest created_at date as the from parameter
+        # If there are articles, use the latest created_at date as the 'from' query parameter
         if latest_article_date:
             from_date = latest_article_date.strftime('%Y-%m-%dT%H:%M:%S')
         else:
-            # If no articles found, use the default subscription date from settings
-            from_date = settings.NEWS_API_SUBSCRIPTION_DATE
+            # If no articles found, use the first day of current month as free subscription plan of news api key
+            # supports that only
+            current_date = datetime.now()
+            from_date = current_date.replace(day=1).date()
 
         all_articles = []
         page = 1
