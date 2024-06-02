@@ -11,6 +11,9 @@ python-dotenv = "==1.0.1"
 mysqlclient = "==2.2.4"
 requests = "==2.32.3"
 django-filter = "==24.2"
+redis = "==4.3.4"
+celery = "==v5.3.1"
+django-celery-beat = "==2.6.0"
 
 [dev-packages]
 

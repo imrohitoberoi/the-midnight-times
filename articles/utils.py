@@ -1,25 +1,19 @@
-import datetime
 import json
 import requests
 
 from django.conf import settings
 from django.db.models import Max
-from django.utils import timezone
 
 from articles import (
     constants as article_constants,
     models as article_models,
+    serializers as article_serializers,
 )
+from themidnighttimes.celery import app
 
-def fetch_latest_news_articles(keyword, last_search_time):
+
+def fetch_latest_news_articles(keyword):
     try:
-        # If the time difference is less than the threshold, return without fetching articles
-        if (
-            last_search_time and timezone.localtime(timezone.now()) - last_search_time <
-            datetime.timedelta(minutes=settings.THRESHOLD_ARTICLE_SEARCH_TIME_IN_MINUTES)
-        ):
-            return []
-
         # Check if there are any articles for the given keyword in the database
         latest_article_date = article_models.NewsArticle.objects.filter(
             keyword=keyword
@@ -68,3 +62,26 @@ def fetch_latest_news_articles(keyword, last_search_time):
 
     except Exception as e:
         return str(e)
+
+@app.task
+def refresh_searched_articles():
+    """
+    Task to refresh searched articles.
+
+    This function fetches the unique keywords from the NewsArticleHistory model,
+    and for each keyword, it fetches the latest news articles using fetch_latest_news_articles task.
+    It then validates and saves the fetched articles.
+    """
+    # Fetching unique keywords from NewsArticleHistory model
+    unique_keywords = article_models.NewsArticleHistory.objects.values_list('keyword', flat=True).distinct()
+
+    for keyword in unique_keywords:
+        # Fetching the latest articles for the keyword
+        latest_articles = fetch_latest_news_articles(keyword)
+
+        # Checking if fetched articles are valid and non-empty
+        if isinstance(latest_articles, list) and len(latest_articles) > 0:
+            serializer = article_serializers.NewsArticleFetchSerializer(data=latest_articles, many=True)
+            if serializer.is_valid():
+                # Saving the validated articles
+                article_serializers.NewsArticleFetchSerializer.save_articles(keyword, serializer.validated_data)
