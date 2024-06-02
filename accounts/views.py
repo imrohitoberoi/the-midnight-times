@@ -35,6 +35,6 @@ class AdminUserViewSet(commons_mixins.MultiSerializerClassViewSetMixin, rest_vie
         'retrieve': account_serializers.AdminUserDetailSerializer,
     }
     http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = get_user_model().objects.all()
+    queryset = get_user_model().all_objects.all()
     permission_classes = [account_permissions.IsAdminUser]
     pagination_class = None
