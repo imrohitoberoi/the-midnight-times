@@ -27,7 +27,6 @@ class NewsArticleFetchSerializer(serializers.ModelSerializer):
                 url=article_data.get('url'),
                 url_to_image=article_data.get('urlToImage'),
                 published_at=article_data.get('publishedAt'),
-                content=article_data.get('content'),
                 source_id=source_id,
                 source_name=source_name
             )
