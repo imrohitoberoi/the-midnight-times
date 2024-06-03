@@ -11,7 +11,7 @@ from accounts import constants as accounts_constants
 
 class LoginSerializer(rest_serializers.Serializer):
     """
-    This Serializer class is used to validate the login credentials.
+    Serializer used to validate the login credentials
     """
 
     email = rest_serializers.EmailField(max_length=accounts_constants.EMAIL_MAX_LENGTH, write_only=True)
@@ -21,9 +21,11 @@ class LoginSerializer(rest_serializers.Serializer):
 
     def validate(self, data):
         user = authenticate(email=data['email'], password=data['password'])
+        # Raise error for unauthenticated users
         if not user:
             raise rest_exceptions.AuthenticationFailed()
 
+        # Handle case of blocked users
         if user.status == get_user_model().BLOCKED:
             raise rest_exceptions.ValidationError(accounts_constants.ERROR_MESSAGES['BLOCKED_USER'])
 
@@ -42,6 +44,9 @@ class LoginSerializer(rest_serializers.Serializer):
 
 
 class AdminUserRegistrationSerializer(rest_serializers.ModelSerializer):
+    """
+    Serializer for registering admin users.
+    """
     password = rest_serializers.CharField(
         max_length=accounts_constants.PASSWORD_MAX_LENGTH,
         validators=[password_validation.validate_password],
@@ -53,18 +58,22 @@ class AdminUserRegistrationSerializer(rest_serializers.ModelSerializer):
         fields = ['email', 'password', 'first_name', 'last_name', 'keyword_quota']
 
     def create(self, validated_data):
+        # Create user using 'create_user'
         return get_user_model().objects.create_user(**validated_data)
 
 
 class AdminUserDetailSerializer(rest_serializers.ModelSerializer):
-
+    """
+    Serializer for retrieving and updating admin user details
+    """
     class Meta:
         model = get_user_model()
         fields = ['email', 'first_name', 'last_name', 'keyword_quota', 'status', 'is_staff']
 
 
-class AdminUserListSerializer(rest_serializers.ModelSerializer):
-
-    class Meta:
-        model = get_user_model()
+class AdminUserListSerializer(AdminUserDetailSerializer):
+    """
+    Serializer for listing admin users
+    """
+    class Meta(AdminUserDetailSerializer.Meta):
         fields = ['id', 'email', 'first_name', 'last_name', 'keyword_quota', 'status']

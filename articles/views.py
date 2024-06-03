@@ -22,6 +22,18 @@ from articles import (
 
 
 class NewsArticleFetchView(rest_generics.ListAPIView):
+    """
+    View for fetching news articles.
+
+    This view fetches news articles from the database and serializes them for display.
+    It also supports filtering and ordering based on specified criteria.
+
+    Attributes:
+        queryset: The queryset containing all news articles.
+        serializer_class: The serializer class used to serialize news articles.
+        filterset_class: The filterset class used for filtering news articles.
+        ordering: The default ordering of news articles (by published date, descending).
+    """
     queryset = articles_models.NewsArticle.objects.all()
     serializer_class = articles_serializers.NewsArticleFetchSerializer
     filterset_class = articles_filters.NewsArticleFilter
@@ -59,6 +71,19 @@ class NewsArticleFetchView(rest_generics.ListAPIView):
         return articles_models.NewsArticle.objects.filter(keyword=keyword)
 
     def check_quota_and_update_history(self, keyword, user):
+        """
+        Check user's keyword quota and update search history.
+
+        This method checks if the user has reached their keyword quota. If the quota is not exceeded,
+        it updates the search history with the provided keyword for the user.
+
+        Args:
+            keyword (str): The keyword to be checked and updated in the search history.
+            user (User): The user for whom the keyword quota and search history are checked and updated.
+
+        Returns:
+            date: last search time of the keyword
+        """
         # Get the user instance
         user_instance = get_user_model().objects.get(id=user.id)
 
@@ -89,6 +114,16 @@ class NewsArticleFetchView(rest_generics.ListAPIView):
 
 
 class NewsArticleHistoryListView(rest_generics.ListAPIView):
+    """
+    View for listing news article search history.
+
+    This view lists the search history of news articles for the authenticated user.
+    It returns a queryset filtered by the user and ordered by the latest update timestamp.
+
+    Attributes:
+        serializer_class: The serializer class used to serialize news article history.
+        pagination_class: The pagination class (None to disable pagination).
+    """
     serializer_class = articles_serializers.NewsArticleHistorySerializer
     pagination_class = None
 
@@ -97,6 +132,17 @@ class NewsArticleHistoryListView(rest_generics.ListAPIView):
 
 
 class MostSearchedKeywordsView(rest_generics.ListAPIView):
+    """
+    View for listing most searched keywords.
+
+    This view lists the most searched keywords along with their search counts.
+    It returns a queryset annotated with the count of distinct users searching for each keyword,
+    ordered by the search count in descending order and limited to the top 5 keywords.
+
+    Attributes:
+        serializer_class: The serializer class used to serialize most searched keywords.
+        pagination_class: The pagination class (None to disable pagination).
+    """
     serializer_class = articles_serializers.MostSearchedKeywordsSerializer
     pagination_class = None
 

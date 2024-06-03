@@ -14,6 +14,18 @@ from themidnighttimes.celery import app
 
 
 def fetch_latest_news_articles(keyword):
+    """
+    Fetch latest news articles for a given keyword.
+
+    This function fetches the latest news articles related to the given keyword
+    from an external API.
+
+    Args:
+        keyword (str): The keyword for which to fetch news articles.
+
+    Returns:
+        list: A list of dictionaries containing data for each news article.
+    """
     try:
         # Check if there are any articles for the given keyword in the database
         latest_article_date = article_models.NewsArticle.objects.filter(
