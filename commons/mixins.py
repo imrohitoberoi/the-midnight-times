@@ -1,8 +1,6 @@
 class MultiSerializerClassViewSetMixin:
     """
-    Multiple Serializers can be defined for a ViewSet using this Mixin.
-    serializer_classes:
-        takes a dict as input with actions defined as keys and the respective serializer to use as their values
+    A mixin to use with DRF ViewSets for supporting multiple serializers based on actions.
     """
     serializer_classes = None
 

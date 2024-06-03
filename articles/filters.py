@@ -4,6 +4,9 @@ from articles import models as articles_models
 
 
 class NewsArticleFilter(django_filters.FilterSet):
+    """
+    FilterSet for filtering news articles.
+    """
     published_at = django_filters.DateFilter(field_name='published_at', lookup_expr='date')
 
     class Meta:

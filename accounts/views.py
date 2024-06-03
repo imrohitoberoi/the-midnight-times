@@ -16,17 +16,34 @@ from commons import mixins as commons_mixins
 
 
 class LoginView(rest_generics.CreateAPIView):
+    """
+    View for user login.
+    Inherits from rest_framework.generics.CreateAPIView.
+    """
     permission_classes = ()
     serializer_class = account_serializers.LoginSerializer
 
 
 class LogoutView(rest_views.APIView):
+    """
+    View for user logout.
+    Inherits from rest_framework.views.APIView.
+    """
     def post(self, request):
+        """
+        POST method for user logout.
+        Deletes the authentication token associated with the request.
+        Returns a success message.
+        """
         request.auth.delete()
         return rest_response.Response({'message': account_constants.SUCCESS_MESSAGES['LOGOUT']})
 
 
 class AdminUserViewSet(commons_mixins.MultiSerializerClassViewSetMixin, rest_viewsets.ModelViewSet):
+    """
+    ViewSet for managing admin users.
+    Inherits from rest_framework.viewsets.ModelViewSet.
+    """
     serializer_classes = {
         'create': account_serializers.AdminUserRegistrationSerializer,
         'update': account_serializers.AdminUserDetailSerializer,

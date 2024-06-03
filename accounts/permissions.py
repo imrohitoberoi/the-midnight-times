@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 class IsAdminUser(permissions.BasePermission):
     """
-    Custom permission to only allow admin users to access the view.
+    Custom permission to only allow admins to access views.
     """
 
     def has_permission(self, request, view):

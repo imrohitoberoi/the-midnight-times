@@ -1,16 +1,29 @@
-from datetime import datetime
-
 from rest_framework import serializers
 
 from articles import models as article_models
 
 class NewsArticleFetchSerializer(serializers.ModelSerializer):
+    """
+    Serializer for news articles fetched from an external API.
+    """
     class Meta:
         model = article_models.NewsArticle
         fields = '__all__'
 
     @staticmethod
     def save_articles(keyword, articles_data):
+        """
+        Save news articles to the database.
+
+        This function saves news articles to the database for a given keyword.
+
+        Args:
+            keyword (str): The keyword associated with the news articles.
+            articles_data (list): A list of dictionaries containing data for each news article.
+
+        Returns:
+            None
+        """
         articles_to_create = []
         for article_data in articles_data:
             source_id = None
@@ -18,7 +31,8 @@ class NewsArticleFetchSerializer(serializers.ModelSerializer):
             if article_data.get('source'):
                 source_id = article_data['source'].get('id')
                 source_name = article_data['source'].get('name')
-            # Creating news articles instances
+
+            # Creating news articles instances using provided data
             article = article_models.NewsArticle(
                 keyword=keyword,
                 author=article_data.get('author'),
@@ -34,15 +48,20 @@ class NewsArticleFetchSerializer(serializers.ModelSerializer):
 
         # Bulk create news articles
         article_models.NewsArticle.objects.bulk_create(articles_to_create)
-        return articles_data
 
 
 class NewsArticleHistorySerializer(serializers.ModelSerializer):
+    """
+    Serializer for news article history.
+    """
     class Meta:
         model = article_models.NewsArticleHistory
         fields = '__all__'
 
 
 class MostSearchedKeywordsSerializer(serializers.Serializer):
+    """
+    Serializer for the most searched keywords.
+    """
     keyword = serializers.CharField()
     count = serializers.IntegerField()
